@@ -10,6 +10,8 @@ import { JsonEditor } from "@/components/config/json-editor";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { CaddyfileEditor } from "@/components/config/caddyfile-editor";
 import { useConfigConverter } from "@/hooks/caddy/use-config-converter";
+import { addSnapshot, useConfigHistory } from "@/lib/config-history";
+import { History, RotateCcw } from "lucide-react";
 
 export function ConfigComparison() {
   const { data: currentConfig, isLoading, dataUpdatedAt } = useQueryConfig();
@@ -20,6 +22,7 @@ export function ConfigComparison() {
 
   const updateConfig = useUpdateConfig();
   const { convertCaddyfileToJson } = useConfigConverter();
+  const snapshots = useConfigHistory();
 
   const currentConfigJson = useMemo(
     () => currentConfig ? JSON.stringify(currentConfig, null, 2) : "",
@@ -45,12 +48,27 @@ export function ConfigComparison() {
         ? JSON.parse(newConfig)
         : await convertCaddyfileToJson(caddyfileConfig);
 
+      const prior = currentConfigJson;
       await updateConfig.mutateAsync(configToUpdate);
+      if (prior) addSnapshot(prior); // keep a restore point of what was running
       setEditedConfig(null);
       toast.success("Configuration updated successfully");
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       toast.error(`Failed to update configuration: ${message}`);
+    }
+  };
+
+  const handleRestore = async (snapshotConfig: string) => {
+    try {
+      const prior = currentConfigJson;
+      await updateConfig.mutateAsync(JSON.parse(snapshotConfig));
+      if (prior) addSnapshot(prior);
+      setEditedConfig(null);
+      toast.success("Configuration restored");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to restore configuration: ${message}`);
     }
   };
 
@@ -105,6 +123,36 @@ export function ConfigComparison() {
           Update Configuration
         </Button>
       </div>
+
+      {snapshots.length > 0 && (
+        <Card className="p-4">
+          <h3 className="font-semibold mb-3 flex items-center gap-2">
+            <History className="h-4 w-4" />
+            History
+            <span className="text-xs font-normal text-muted-foreground">
+              (restore points saved before each change)
+            </span>
+          </h3>
+          <ul className="divide-y">
+            {snapshots.map((snap) => (
+              <li key={snap.id} className="flex items-center justify-between py-2">
+                <span className="text-sm text-muted-foreground">
+                  {new Date(snap.timestamp).toLocaleString()}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={updateConfig.isPending}
+                  onClick={() => handleRestore(snap.config)}
+                >
+                  <RotateCcw className="h-3.5 w-3.5 mr-2" />
+                  Restore
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
     </div>
   );
 }
