@@ -46,7 +46,8 @@ export function ServerCard({ name, type, origin, config }: ServerCardProps) {
       await deleteServer.mutateAsync({ host: name })
       toast.success("Server deleted successfully")
     } catch (error) {
-      toast.error(`Failed to delete server ${error}`)
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to delete server: ${message}`)
     } finally {
       setIsDeleting(false)
     }

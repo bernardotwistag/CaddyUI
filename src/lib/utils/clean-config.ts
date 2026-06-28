@@ -1,19 +1,25 @@
 export type JsonValue = string | number | boolean | null | JsonObject | JsonValue[] | undefined
 type JsonObject = { [key: string]: JsonValue }
 
+function cleanValue(value: JsonValue): JsonValue {
+  if (value == null) return undefined;
+  if (Array.isArray(value)) {
+    return value.map(cleanValue).filter(v => v != null);
+  }
+  if (typeof value === 'object') {
+    return cleanConfig(value as JsonObject);
+  }
+  return value;
+}
+
 export function cleanConfig(config: JsonObject | undefined): JsonObject {
   if (!config) return {};
-  
-  const cleaned = Object.fromEntries(
-    Object.entries(config).filter(([, v]) => v != null).map(([k, v]) => {
-      if (typeof v === 'object' && v !== null) {
-        return [k, cleanConfig(v as JsonObject)];
-      }
-      return [k, v];
-    })
+
+  return Object.fromEntries(
+    Object.entries(config)
+      .filter(([, v]) => v != null)
+      .map(([k, v]) => [k, cleanValue(v)])
   );
-  
-  return cleaned;
 }
 
 

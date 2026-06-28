@@ -74,12 +74,10 @@ export function ServerForm({ defaultValues, onSubmit, isSubmitting }: ServerForm
   })
 
   const handleReverseProxySubmit = async (values: ReverseProxyFormData) => {
-    console.log('ServerForm handleReverseProxySubmit called')
     const payload = {
       ...form.getValues(),
       reverseProxyConfig: values
     }
-    console.log('Full Payload:', JSON.stringify(payload, null, 2))
     await onSubmit(payload)
   }
 

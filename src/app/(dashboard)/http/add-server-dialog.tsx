@@ -51,7 +51,8 @@ export function AddServerDialog({ children }: { children: React.ReactNode }) {
       toast.success("Server added successfully")
       setOpen(false)
     } catch (error) {
-      toast.error(`Failed to add server ${error}`)
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to add server: ${message}`)
     }
   }
 

@@ -4,12 +4,7 @@ import { QUERY_KEYS } from '@/lib/constants';
 import type { CaddyConfig } from '@/lib/caddy/types';
 
 const getConfig = async (caddyClient: ReturnType<typeof useCaddyClient>): Promise<CaddyConfig> => {
-  try {
-    const config = await caddyClient.getConfig();
-    return config;
-  } catch (error) {
-    throw error;
-  }
+  return caddyClient.getConfig();
 };
 
 export const useQueryConfig = () => {

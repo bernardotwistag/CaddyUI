@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useCaddyClient } from '@/lib/caddy/hooks/use-caddy-client';
+import { toast } from 'sonner';
 
 export function ConfigActions() {
   const [isLoading, setIsLoading] = useState(false);
@@ -30,7 +31,8 @@ export function ConfigActions() {
       const config = JSON.parse(await file.text());
       await caddyClient.loadConfig(config);
     } catch (error) {
-      console.error('Failed to import configuration:', error);
+      const message = error instanceof Error ? error.message : 'Invalid configuration file';
+      toast.error(`Failed to import configuration: ${message}`);
     } finally {
       setIsLoading(false);
     }

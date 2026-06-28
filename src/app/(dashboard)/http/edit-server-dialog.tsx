@@ -59,8 +59,9 @@ export function EditServerDialog({ children, initialValues }: EditServerDialogPr
       });
       toast.success("Server updated successfully");
       setOpen(false);
-    } catch {
-      toast.error("Failed to update server");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to update server: ${message}`);
     }
   }
 

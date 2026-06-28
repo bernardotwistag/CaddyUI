@@ -42,7 +42,8 @@ export function ConfigComparison() {
       await updateConfig.mutateAsync(configToUpdate);
       toast.success("Configuration updated successfully");
     } catch (error) {
-      toast.error(`Failed to update configuration: ${error}`);
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Failed to update configuration: ${message}`);
     }
   };
 

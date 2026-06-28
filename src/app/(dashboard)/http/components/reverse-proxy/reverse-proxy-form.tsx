@@ -209,10 +209,8 @@ export function ReverseProxyForm({ defaultValues, onSubmit, isSubmitting }: Reve
         throw new Error('Failed to transform reverse proxy configuration')
       }
 
-      console.log('Transformed ReverseProxy Form Values:', JSON.stringify(transformedData, null, 2))
       await onSubmit(transformedData as ReverseProxyFormData)
     } catch (error) {
-      console.error('Error transforming form data:', error)
       throw error
     }
   }
