@@ -3,6 +3,11 @@ name: Build and Push to Docker Hub
 on:
   push:
     branches: [main]
+    # Docs-only changes shouldn't rebuild the image or bump the version.
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
 
 # Needed so the job can commit the version bump and push the tag back.
 permissions:
