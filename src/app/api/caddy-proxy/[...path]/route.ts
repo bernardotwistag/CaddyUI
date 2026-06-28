@@ -3,12 +3,20 @@ import { NextRequest } from 'next/server';
 const CADDY_ADMIN_URL = process.env.CADDY_ADMIN_URL || 'http://localhost:2019';
 
 function corsHeaders(origin: string | null) {
-  return {
-    'Access-Control-Allow-Origin': origin || '*',
+  // Same-origin only: echo the request origin instead of a wildcard. Browser
+  // calls from the app are same-origin (no preflight); cross-origin access is
+  // intentionally not granted.
+  const headers: Record<string, string> = {
     'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Credentials': 'true',
     'Access-Control-Max-Age': '86400',
+    'Vary': 'Origin',
   };
+  if (origin) {
+    headers['Access-Control-Allow-Origin'] = origin;
+  }
+  return headers;
 }
 
 export async function OPTIONS(request: NextRequest) {
