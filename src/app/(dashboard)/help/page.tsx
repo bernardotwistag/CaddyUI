@@ -15,6 +15,7 @@ import {
   Rocket,
   Container,
   Terminal,
+  RefreshCw,
 } from "lucide-react";
 
 function CodeBlock({ code }: { code: string }) {
@@ -49,7 +50,7 @@ function CodeBlock({ code }: { code: string }) {
 }
 
 export default function HelpPage() {
-  const { data, isLoading } = useVersionCheck();
+  const { data, isLoading, isFetching, refetch } = useVersionCheck();
 
   const updateAvailable = data?.updateAvailable ?? false;
 
@@ -110,6 +111,18 @@ export default function HelpPage() {
                 You&apos;re running the latest version. 🎉
               </div>
             )}
+
+            <div className="pt-1">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => refetch()}
+                disabled={isFetching}
+              >
+                <RefreshCw className={`h-4 w-4 mr-2 ${isFetching ? "animate-spin" : ""}`} />
+                {isFetching ? "Checking…" : "Check for updates"}
+              </Button>
+            </div>
           </CardContent>
         </Card>
 

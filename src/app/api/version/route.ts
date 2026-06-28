@@ -5,8 +5,9 @@ const CURRENT_VERSION = process.env.NEXT_PUBLIC_APP_VERSION || "0.0.0";
 const REPO = process.env.GITHUB_REPO || "bernardotwistag/CaddyUI";
 const BRANCH = process.env.GITHUB_BRANCH || "main";
 
-// Cache the upstream check for an hour so we don't hammer GitHub.
-export const revalidate = 3600;
+// Run fresh on every request — the client (react-query) throttles how often
+// this is actually called, so the result stays timely without a stale cache.
+export const dynamic = "force-dynamic";
 
 interface VersionInfo {
   current: string;
@@ -25,9 +26,12 @@ export async function GET() {
   };
 
   try {
+    // Cache-bust GitHub's raw-file CDN edge cache in ~5 min buckets so a fresh
+    // release is picked up promptly, while no-store keeps Next from caching it.
+    const bucket = Math.floor(Date.now() / 300_000);
     const res = await fetch(
-      `https://raw.githubusercontent.com/${REPO}/${BRANCH}/package.json`,
-      { next: { revalidate: 3600 } }
+      `https://raw.githubusercontent.com/${REPO}/${BRANCH}/package.json?cb=${bucket}`,
+      { cache: "no-store" }
     );
 
     if (!res.ok) {

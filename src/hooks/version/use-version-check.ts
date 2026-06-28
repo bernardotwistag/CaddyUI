@@ -8,7 +8,7 @@ export interface VersionInfo {
   error?: string;
 }
 
-const ONE_HOUR = 1000 * 60 * 60;
+const MINUTE = 1000 * 60;
 
 export function useVersionCheck() {
   return useQuery<VersionInfo>({
@@ -20,9 +20,9 @@ export function useVersionCheck() {
       }
       return res.json();
     },
-    staleTime: ONE_HOUR,
-    refetchInterval: ONE_HOUR * 6,
-    refetchOnWindowFocus: false,
+    staleTime: MINUTE * 15,
+    refetchInterval: MINUTE * 30,
+    refetchOnWindowFocus: true,
     retry: 1,
   });
 }
