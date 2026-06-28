@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import Editor from "@monaco-editor/react";
 
 interface CaddyfileEditorProps {
@@ -16,26 +16,25 @@ export function CaddyfileEditor({
   onValidityChange,
   readOnly = false,
 }: CaddyfileEditorProps) {
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(() => {
+    return value.trim() ? null : "Caddyfile is empty";
+  });
 
-  useEffect(() => {
-    // Basic validation - can be enhanced later
-    if (value.trim()) {
-      setError(null);
-      onValidityChange(true);
-    } else {
-      setError("Caddyfile is empty");
-      onValidityChange(false);
-    }
-  }, [value, onValidityChange]);
+  const handleChange = useCallback((newValue: string | undefined) => {
+    const val = newValue ?? "";
+    const isEmpty = !val.trim();
+    setError(isEmpty ? "Caddyfile is empty" : null);
+    onValidityChange(!isEmpty);
+    onChange?.(val);
+  }, [onChange, onValidityChange]);
 
   return (
     <div className="space-y-2">
       <div className="h-[calc(100vh-300px)] border rounded-md overflow-hidden">
         <Editor
           value={value}
-          onChange={(value) => onChange?.(value ?? "")}
-          language="nginx" // Using nginx highlighting as it's close to Caddyfile syntax
+          onChange={handleChange}
+          language="nginx"
           theme="vs-dark"
           options={{
             readOnly,
@@ -50,4 +49,4 @@ export function CaddyfileEditor({
       {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
   );
-} 
+}

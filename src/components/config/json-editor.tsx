@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useCallback, useState } from "react";
 import Editor from "@monaco-editor/react";
 
 interface JsonEditorProps {
@@ -10,33 +10,41 @@ interface JsonEditorProps {
   readOnly?: boolean;
 }
 
+function validateJson(value: string): string | null {
+  if (!value) return "JSON is empty";
+  try {
+    JSON.parse(value);
+    return null;
+  } catch (e) {
+    return (e as Error).message;
+  }
+}
+
 export function JsonEditor({
   value,
   onChange,
   onValidityChange,
   readOnly = false,
 }: JsonEditorProps) {
-  const error = useMemo(() => {
-    if (!value) {
-      onValidityChange(false);
-      return "JSON is empty";
-    }
-    try {
-      JSON.parse(value);
-      onValidityChange(true);
-      return null;
-    } catch (e) {
-      onValidityChange(false);
-      return (e as Error).message;
-    }
-  }, [value, onValidityChange]);
+  const [error, setError] = useState<string | null>(() => {
+    const err = validateJson(value);
+    return err;
+  });
+
+  const handleChange = useCallback((newValue: string | undefined) => {
+    const val = newValue ?? "";
+    const err = validateJson(val);
+    setError(err);
+    onValidityChange(!err);
+    onChange?.(val);
+  }, [onChange, onValidityChange]);
 
   return (
     <div className="space-y-2">
       <div className="h-[calc(100vh-300px)] border rounded-md overflow-hidden">
         <Editor
           value={value}
-          onChange={(value) => onChange?.(value ?? "")}
+          onChange={handleChange}
           language="json"
           theme="vs-dark"
           options={{
