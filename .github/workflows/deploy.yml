@@ -4,15 +4,53 @@ on:
   push:
     branches: [main]
 
+# Needed so the job can commit the version bump and push the tag back.
+permissions:
+  contents: write
+
 env:
   IMAGE_NAME: nebulatrader/caddy-ui
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    # Don't run on the automated release commit. (Pushes made with GITHUB_TOKEN
+    # don't re-trigger workflows anyway — this is belt-and-suspenders.)
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Bump package.json (written to the working tree, NOT committed yet) so the
+      # version gets baked into the image. The commit/tag happens only after the
+      # image is successfully published, keeping main in sync with :latest.
+      #
+      # Bump level is patch by default; include #minor / #major in the commit
+      # message to bump those, or #skip-bump to publish without bumping.
+      - name: Determine and apply version bump
+        id: bump
+        run: |
+          MSG=$(git log -1 --pretty=%B)
+          if echo "$MSG" | grep -qi '#skip-bump'; then
+            echo "Skipping version bump (#skip-bump)"
+            echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+            echo "bumped=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if echo "$MSG" | grep -qi '#major'; then LEVEL=major
+          elif echo "$MSG" | grep -qi '#minor'; then LEVEL=minor
+          else LEVEL=patch
+          fi
+          NEW=$(npm version --no-git-tag-version "$LEVEL")
+          echo "Bumped ($LEVEL) -> $NEW"
+          echo "version=${NEW#v}" >> "$GITHUB_OUTPUT"
+          echo "bumped=true" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -23,10 +61,6 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Extract version from package.json
-        id: version
-        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
-
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
@@ -34,6 +68,18 @@ jobs:
           push: true
           tags: |
             ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}
+            ${{ env.IMAGE_NAME }}:${{ steps.bump.outputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # Only reached if the build+push above succeeded.
+      - name: Commit and tag release
+        if: steps.bump.outputs.bumped == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json
+          git commit -m "chore: release v${{ steps.bump.outputs.version }} [skip ci]"
+          git tag "v${{ steps.bump.outputs.version }}"
+          git push origin HEAD:main
+          git push origin "v${{ steps.bump.outputs.version }}"
