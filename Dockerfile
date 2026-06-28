@@ -33,5 +33,10 @@ COPY --from=builder /app/.next/standalone/. ./
 # Expose the port the app runs on
 EXPOSE 3000
 
+# Liveness check — hits /api/health on whatever PORT the server listens on
+# (Coolify sets PORT=80, docker-compose defaults to 3000).
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+  CMD node -e "const p=process.env.PORT||3000;fetch('http://127.0.0.1:'+p+'/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+
 # Start the application
 CMD ["node", "server.js"]
