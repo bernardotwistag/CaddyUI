@@ -38,6 +38,11 @@ Add, edit, and delete reverse-proxy servers and routes.
 
 ![HTTP Servers](docs/screenshots/http.svg)
 
+### Add a Reverse Proxy
+Configure upstreams, load balancing, health checks, and headers from one dialog.
+
+![Add Reverse Proxy](docs/screenshots/add-reverse-proxy.svg)
+
 ### Configuration
 Inspect and edit the full Caddy config in JSON or Caddyfile, side by side.
 
