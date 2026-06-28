@@ -28,7 +28,7 @@ export default function HTTPServersPage() {
     name: route.host,
     type: route.handler as HandlerType,
     origin: route.upstreams.join(', '),
-    config: route.handlerConfig as ServerFormData['reverseProxyConfig'],
+    config: route.handlerConfig as unknown as ServerFormData['reverseProxyConfig'],
   }));
 
   if (isLoading) {

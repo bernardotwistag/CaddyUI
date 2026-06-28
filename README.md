@@ -158,8 +158,19 @@ docker compose up -d
 | Variable | Description | Default |
 |---|---|---|
 | `CADDY_ADMIN_URL` | URL of the Caddy admin API | `http://localhost:2019` |
+| `ADMIN_PASSWORD` | Password to log in. **If empty, the UI runs without auth** (a warning is logged). | _(unset)_ |
+| `SESSION_SECRET` | Secret used to sign session cookies | derived from `ADMIN_PASSWORD` |
+| `SESSION_TTL_HOURS` | Session lifetime in hours | `168` |
 | `GITHUB_REPO` | Repo checked for update notifications | `bernardotwistag/CaddyUI` |
 | `GITHUB_BRANCH` | Branch checked for update notifications | `main` |
+
+### Authentication
+
+Set `ADMIN_PASSWORD` to require a single password to access the UI. A signed, httpOnly session
+cookie is issued on login; **all routes and the `/api/caddy-proxy/*` admin proxy are protected**
+(only `/login`, `/api/auth/*`, and `/api/health` are public). Leaving `ADMIN_PASSWORD` unset
+runs the UI without authentication — fine on a trusted private network, not recommended when
+exposed.
 
 ### Enabling the Caddy Admin API
 

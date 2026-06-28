@@ -43,7 +43,7 @@ export default function HomePage() {
   const upstreamList = upstreams ?? [];
   const healthyUpstreams = upstreamList.filter((u) => u.fails === 0).length;
 
-  const metrics = [
+  const metrics: { label: string; value: string; sub?: string }[] = [
     { label: "Servers", value: String(serverCount) },
     { label: "Routes", value: String(routes.length) },
     {
