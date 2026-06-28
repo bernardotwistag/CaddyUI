@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useQueryConfig } from "@/hooks/caddy/use-query-config";
 import { Button } from "@/components/ui/button";
 import { useUpdateConfig } from "@/hooks/caddy/use-update-config";
@@ -12,12 +12,11 @@ import { CaddyfileEditor } from "@/components/config/caddyfile-editor";
 import { useConfigConverter } from "@/hooks/caddy/use-config-converter";
 
 export function ConfigComparison() {
-  const { data: currentConfig, isLoading } = useQueryConfig();
-  const [newConfig, setNewConfig] = useState<string>("");
+  const { data: currentConfig, isLoading, dataUpdatedAt } = useQueryConfig();
+  const [editedConfig, setEditedConfig] = useState<{ value: string; basedOn: number } | null>(null);
   const [caddyfileConfig, setCaddyfileConfig] = useState<string>("");
   const [isValid, setIsValid] = useState(false);
   const [mode, setMode] = useState<"json" | "caddyfile">("json");
-  const lastSyncedConfig = useRef<string>("");
 
   const updateConfig = useUpdateConfig();
   const { convertCaddyfileToJson } = useConfigConverter();
@@ -27,10 +26,13 @@ export function ConfigComparison() {
     [currentConfig]
   );
 
-  if (currentConfigJson && currentConfigJson !== lastSyncedConfig.current) {
-    lastSyncedConfig.current = currentConfigJson;
-    setNewConfig(currentConfigJson);
-  }
+  const newConfig = editedConfig && editedConfig.basedOn === dataUpdatedAt
+    ? editedConfig.value
+    : currentConfigJson;
+
+  const handleConfigChange = useCallback((value: string) => {
+    setEditedConfig({ value, basedOn: dataUpdatedAt });
+  }, [dataUpdatedAt]);
 
   const handleUpdate = async () => {
     if (!isValid) {
@@ -44,6 +46,7 @@ export function ConfigComparison() {
         : await convertCaddyfileToJson(caddyfileConfig);
 
       await updateConfig.mutateAsync(configToUpdate);
+      setEditedConfig(null);
       toast.success("Configuration updated successfully");
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
@@ -62,7 +65,7 @@ export function ConfigComparison() {
           <h3 className="font-semibold mb-2">Current Configuration</h3>
           <div className="mt-[48px]">
             <JsonEditor
-              value={JSON.stringify(currentConfig, null, 2)}
+              value={currentConfigJson}
               readOnly
               onValidityChange={() => {}}
             />
@@ -86,7 +89,7 @@ export function ConfigComparison() {
             <TabsContent value="json">
               <JsonEditor
                 value={newConfig}
-                onChange={setNewConfig}
+                onChange={handleConfigChange}
                 onValidityChange={setIsValid}
               />
             </TabsContent>
