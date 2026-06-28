@@ -1,0 +1,74 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <rect width="1200" height="720" fill="#ffffff"/>
+  <!-- header -->
+  <line x1="0" y1="64" x2="1200" y2="64" stroke="#e5e7eb"/>
+  <text x="40" y="40" font-size="22" font-weight="800" fill="#0f172a">Caddy UI</text>
+  <line x1="150" y1="22" x2="150" y2="42" stroke="#e5e7eb"/>
+  <text x="176" y="40" font-size="16" fill="#64748b">Dashboard</text>
+  <text x="290" y="40" font-size="16" fill="#64748b">HTTP</text>
+  <text x="360" y="40" font-size="16" font-weight="600" fill="#0f172a">Config</text>
+  <text x="446" y="40" font-size="16" fill="#64748b">Help</text>
+
+  <!-- title + buttons -->
+  <text x="40" y="108" font-size="26" font-weight="700" fill="#0f172a">Configuration</text>
+  <text x="40" y="134" font-size="14" fill="#64748b">Manage your Caddy server configuration</text>
+  <rect x="40" y="150" width="118" height="38" rx="8" fill="#0f172a"/><text x="99" y="174" font-size="13" text-anchor="middle" fill="#fff">Export Config</text>
+  <rect x="168" y="150" width="118" height="38" rx="8" fill="#0f172a"/><text x="227" y="174" font-size="13" text-anchor="middle" fill="#fff">Import Config</text>
+
+  <!-- panels -->
+  <g>
+    <rect x="40" y="208" width="552" height="488" rx="12" fill="#ffffff" stroke="#e5e7eb"/>
+    <text x="64" y="240" font-size="15" font-weight="600" fill="#0f172a">Current Configuration</text>
+    <!-- editor -->
+    <rect x="64" y="260" width="504" height="416" rx="8" fill="#1e1e1e"/>
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12.5">
+      <g fill="#858585">
+        <text x="80" y="286">1</text><text x="80" y="306">2</text><text x="80" y="326">3</text><text x="80" y="346">4</text><text x="80" y="366">5</text><text x="80" y="386">6</text><text x="80" y="406">7</text><text x="80" y="426">8</text><text x="80" y="446">9</text><text x="76" y="466">10</text><text x="76" y="486">11</text><text x="76" y="506">12</text><text x="76" y="526">13</text><text x="76" y="546">14</text>
+      </g>
+      <text x="108" y="286" fill="#d4d4d4">{</text>
+      <text x="124" y="306" fill="#9cdcfe">"admin"</text><text x="184" y="306" fill="#d4d4d4">: {</text>
+      <text x="140" y="326" fill="#9cdcfe">"listen"</text><text x="206" y="326" fill="#d4d4d4">: </text><text x="218" y="326" fill="#ce9178">"tcp/0.0.0.0:2019"</text>
+      <text x="124" y="346" fill="#d4d4d4">},</text>
+      <text x="124" y="366" fill="#9cdcfe">"apps"</text><text x="172" y="366" fill="#d4d4d4">: {</text>
+      <text x="140" y="386" fill="#9cdcfe">"http"</text><text x="186" y="386" fill="#d4d4d4">: {</text>
+      <text x="156" y="406" fill="#9cdcfe">"servers"</text><text x="230" y="406" fill="#d4d4d4">: {</text>
+      <text x="172" y="426" fill="#9cdcfe">"srv0"</text><text x="218" y="426" fill="#d4d4d4">: {</text>
+      <text x="188" y="446" fill="#9cdcfe">"listen"</text><text x="254" y="446" fill="#d4d4d4">: [</text>
+      <text x="204" y="466" fill="#ce9178">":443"</text>
+      <text x="188" y="486" fill="#d4d4d4">],</text>
+      <text x="188" y="506" fill="#9cdcfe">"routes"</text><text x="254" y="506" fill="#d4d4d4">: [</text>
+      <text x="204" y="526" fill="#d4d4d4">{</text>
+      <text x="220" y="546" fill="#9cdcfe">"handle"</text><text x="286" y="546" fill="#d4d4d4">: [ … ]</text>
+    </g>
+  </g>
+
+  <g>
+    <rect x="608" y="208" width="552" height="488" rx="12" fill="#ffffff" stroke="#e5e7eb"/>
+    <text x="632" y="240" font-size="15" font-weight="600" fill="#0f172a">New Configuration</text>
+    <!-- tabs -->
+    <rect x="632" y="256" width="120" height="30" rx="6" fill="#f1f5f9"/>
+    <rect x="636" y="259" width="56" height="24" rx="5" fill="#ffffff" stroke="#e5e7eb"/>
+    <text x="664" y="275" font-size="12" text-anchor="middle" fill="#0f172a">JSON</text>
+    <text x="722" y="275" font-size="12" text-anchor="middle" fill="#64748b">Caddyfile</text>
+    <!-- editor -->
+    <rect x="632" y="296" width="504" height="380" rx="8" fill="#1e1e1e"/>
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12.5">
+      <g fill="#858585">
+        <text x="648" y="322">1</text><text x="648" y="342">2</text><text x="648" y="362">3</text><text x="648" y="382">4</text><text x="648" y="402">5</text><text x="648" y="422">6</text><text x="648" y="442">7</text><text x="648" y="462">8</text><text x="648" y="482">9</text><text x="644" y="502">10</text><text x="644" y="522">11</text><text x="644" y="542">12</text>
+      </g>
+      <text x="676" y="322" fill="#d4d4d4">{</text>
+      <text x="692" y="342" fill="#9cdcfe">"admin"</text><text x="752" y="342" fill="#d4d4d4">: {</text>
+      <text x="708" y="362" fill="#9cdcfe">"listen"</text><text x="774" y="362" fill="#d4d4d4">: </text><text x="786" y="362" fill="#ce9178">"tcp/0.0.0.0:2019"</text>
+      <text x="692" y="382" fill="#d4d4d4">},</text>
+      <text x="692" y="402" fill="#9cdcfe">"apps"</text><text x="740" y="402" fill="#d4d4d4">: {</text>
+      <text x="708" y="422" fill="#9cdcfe">"http"</text><text x="754" y="422" fill="#d4d4d4">: {</text>
+      <text x="724" y="442" fill="#9cdcfe">"servers"</text><text x="798" y="442" fill="#d4d4d4">: {</text>
+      <text x="740" y="462" fill="#9cdcfe">"srv0"</text><text x="786" y="462" fill="#d4d4d4">: {</text>
+      <text x="756" y="482" fill="#9cdcfe">"listen"</text><text x="822" y="482" fill="#d4d4d4">: [ </text><text x="846" y="482" fill="#ce9178">":443"</text><text x="888" y="482" fill="#d4d4d4"> ],</text>
+      <text x="756" y="502" fill="#9cdcfe">"routes"</text><text x="822" y="502" fill="#d4d4d4">: [ … ]</text>
+    </g>
+  </g>
+
+  <!-- update button -->
+  <rect x="980" y="708" width="180" height="0" fill="none"/>
+</svg>
