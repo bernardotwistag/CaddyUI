@@ -24,7 +24,6 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV CADDY_ADMIN_URL=http://54.216.186.77:2019
 
 # Copy necessary files
 COPY --from=builder /app/public ./public
