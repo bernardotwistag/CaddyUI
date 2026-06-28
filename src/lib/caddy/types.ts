@@ -6,7 +6,34 @@ export interface CaddyConfig {
     http?: {
       servers?: Record<string, CaddyServerConfig>;
     };
+    tls?: CaddyTlsApp;
   };
+}
+
+export interface CaddyTlsApp {
+  certificates?: {
+    load_files?: CaddyLoadedCert[];
+  };
+  automation?: {
+    policies?: CaddyTlsPolicy[];
+  };
+}
+
+export interface CaddyLoadedCert {
+  certificate: string;
+  key?: string;
+  tags?: string[];
+}
+
+export interface CaddyTlsPolicy {
+  subjects?: string[];
+  issuers?: CaddyTlsIssuer[];
+}
+
+export interface CaddyTlsIssuer {
+  module?: string;
+  ca?: string;
+  email?: string;
 }
 
 export interface CaddyServerConfig {

@@ -11,6 +11,7 @@ const navLinks = [
   { href: "/", label: "Dashboard" },
   { href: "/http", label: "HTTP" },
   { href: "/upstream", label: "Upstreams" },
+  { href: "/certificates", label: "Certificates" },
   { href: "/config", label: "Config" },
   { href: "/help", label: "Help" },
 ];
