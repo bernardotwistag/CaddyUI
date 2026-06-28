@@ -74,10 +74,11 @@ Caddy UI talks to Caddy through a built-in proxy (`/api/caddy-proxy/[...path]`) 
 | `/reverse_proxy/upstreams` | GET | Current status of configured upstreams | ✅ Supported |
 | `/pki/ca/<id>` | GET | Info about a PKI app CA | ✅ Supported |
 | `/pki/ca/<id>/certificates` | GET | Certificate chain of a CA | ✅ Supported |
-| `/id/<id>` | any | Address config objects by `@id` | ❌ Not yet |
-| `/metrics` | GET | Prometheus metrics | ❌ Not yet |
+| `/id/<id>` | GET·POST·PUT·PATCH·DELETE | Address config objects by `@id` | ❌ Not yet |
 
 ¹ The proxy forwards `PUT` requests, but there is no dedicated client helper or UI action for it yet.
+
+_Verified against the [official Caddy admin API docs](https://caddyserver.com/docs/api) on 2026-06-29 — this is the complete documented surface. The only gaps are `PUT /config` (proxy-only) and the `/id/<id>` (`@id`) family._
 
 > **Handlers:** the server form currently exposes the **`reverse_proxy`** and **`origin`** handlers. Others (`file_server`, `headers`, `rewrite`, `static_response`, …) are scaffolded in the code but commented out.
 
