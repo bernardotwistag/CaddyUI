@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import Editor from "@monaco-editor/react";
 
 interface JsonEditorProps {
@@ -16,21 +16,18 @@ export function JsonEditor({
   onValidityChange,
   readOnly = false,
 }: JsonEditorProps) {
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    try {
-      if (value) {
-        JSON.parse(value);
-        setError(null);
-        onValidityChange(true);
-      } else {
-        setError("JSON is empty");
-        onValidityChange(false);
-      }
-    } catch (e) {
-      setError((e as Error).message);
+  const error = useMemo(() => {
+    if (!value) {
       onValidityChange(false);
+      return "JSON is empty";
+    }
+    try {
+      JSON.parse(value);
+      onValidityChange(true);
+      return null;
+    } catch (e) {
+      onValidityChange(false);
+      return (e as Error).message;
     }
   }, [value, onValidityChange]);
 

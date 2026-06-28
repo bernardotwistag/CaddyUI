@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useQueryConfig } from "@/hooks/caddy/use-query-config";
 import { Button } from "@/components/ui/button";
 import { useUpdateConfig } from "@/hooks/caddy/use-update-config";
@@ -17,16 +17,20 @@ export function ConfigComparison() {
   const [caddyfileConfig, setCaddyfileConfig] = useState<string>("");
   const [isValid, setIsValid] = useState(false);
   const [mode, setMode] = useState<"json" | "caddyfile">("json");
-  
+  const lastSyncedConfig = useRef<string>("");
+
   const updateConfig = useUpdateConfig();
   const { convertCaddyfileToJson } = useConfigConverter();
 
-  useEffect(() => {
-    if (currentConfig) {
-      const jsonString = JSON.stringify(currentConfig, null, 2);
-      setNewConfig(jsonString);      
-    }
-  }, [currentConfig]);
+  const currentConfigJson = useMemo(
+    () => currentConfig ? JSON.stringify(currentConfig, null, 2) : "",
+    [currentConfig]
+  );
+
+  if (currentConfigJson && currentConfigJson !== lastSyncedConfig.current) {
+    lastSyncedConfig.current = currentConfigJson;
+    setNewConfig(currentConfigJson);
+  }
 
   const handleUpdate = async () => {
     if (!isValid) {
@@ -35,10 +39,10 @@ export function ConfigComparison() {
     }
 
     try {
-      const configToUpdate = mode === "json" 
+      const configToUpdate = mode === "json"
         ? JSON.parse(newConfig)
         : await convertCaddyfileToJson(caddyfileConfig);
-        
+
       await updateConfig.mutateAsync(configToUpdate);
       toast.success("Configuration updated successfully");
     } catch (error) {
@@ -64,7 +68,7 @@ export function ConfigComparison() {
             />
           </div>
         </Card>
-        
+
         <Card className="p-4">
           <h3 className="font-semibold mb-2">New Configuration</h3>
           <Tabs value={mode} onValueChange={(v) => setMode(v as "json" | "caddyfile")}>
@@ -89,10 +93,10 @@ export function ConfigComparison() {
           </Tabs>
         </Card>
       </div>
-      
+
       <div className="flex justify-end">
-        <Button 
-          onClick={handleUpdate} 
+        <Button
+          onClick={handleUpdate}
           disabled={!isValid || updateConfig.isPending}
         >
           Update Configuration
@@ -100,4 +104,4 @@ export function ConfigComparison() {
       </div>
     </div>
   );
-} 
+}
