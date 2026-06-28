@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 import Editor from "@monaco-editor/react";
+import { useTheme } from "next-themes";
 
 interface JsonEditorProps {
   value: string;
@@ -26,6 +27,7 @@ export function JsonEditor({
   onValidityChange,
   readOnly = false,
 }: JsonEditorProps) {
+  const { resolvedTheme } = useTheme();
   const [error, setError] = useState<string | null>(() => {
     const err = validateJson(value);
     return err;
@@ -46,7 +48,7 @@ export function JsonEditor({
           value={value}
           onChange={handleChange}
           language="json"
-          theme="vs-dark"
+          theme={resolvedTheme === "dark" ? "vs-dark" : "light"}
           options={{
             readOnly,
             minimap: { enabled: false },

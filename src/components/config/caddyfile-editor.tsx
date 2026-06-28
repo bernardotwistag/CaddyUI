@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 import Editor from "@monaco-editor/react";
+import { useTheme } from "next-themes";
 
 interface CaddyfileEditorProps {
   value: string;
@@ -16,6 +17,7 @@ export function CaddyfileEditor({
   onValidityChange,
   readOnly = false,
 }: CaddyfileEditorProps) {
+  const { resolvedTheme } = useTheme();
   const [error, setError] = useState<string | null>(() => {
     return value.trim() ? null : "Caddyfile is empty";
   });
@@ -35,7 +37,7 @@ export function CaddyfileEditor({
           value={value}
           onChange={handleChange}
           language="nginx"
-          theme="vs-dark"
+          theme={resolvedTheme === "dark" ? "vs-dark" : "light"}
           options={{
             readOnly,
             minimap: { enabled: false },
