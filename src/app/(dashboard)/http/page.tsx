@@ -9,9 +9,10 @@ import { useQueryConfig } from '@/hooks/caddy/use-query-config'
 import { Skeleton } from "@/components/ui/skeleton"
 import { ServerFormData } from "@/app/(dashboard)/http/components/server-form"
 import { handlerTypes } from "@/app/(dashboard)/http/components/server-form"
+import { parseAllRoutes } from "@/lib/caddy/parse-route"
 
 type HandlerType = keyof typeof handlerTypes
-  
+
 interface ServerCardData {
   name: string;
   type: HandlerType;
@@ -19,47 +20,16 @@ interface ServerCardData {
   config: ServerFormData['reverseProxyConfig'];
 }
 
-interface FileServerHandler {
-  handler: 'file_server';
-  root?: string;
-}
-
 export default function HTTPServersPage() {
   const { data: config, isLoading } = useQueryConfig();
 
-  // Extract srv1 routes from config
-  const srv1Routes = config?.apps?.http?.servers?.srv1?.routes || [];
-  
-  // Transform routes data for cards
-  const serverCards: ServerCardData[] = srv1Routes.map((route) => {
-    const host = route.match?.[0]?.host?.[0] || 'default';
-    
-    // Extract handler and upstream info from the subroute structure
-    const subroute = route.handle?.[0];
-    const innerRoute = subroute?.routes?.[0];
-    const handler = innerRoute?.handle?.[0];
-    let origin: string | undefined = undefined;
-
-    if (
-      subroute?.handler === "subroute" && 
-      handler?.handler === "reverse_proxy" &&
-      handler.upstreams
-    ) {
-      origin = handler.upstreams.map(upstream => upstream.dial).join(', ');
-    } else if (
-      handler?.handler === "file_server" && 
-      (handler as FileServerHandler).root
-    ) {
-      origin = (handler as FileServerHandler).root;
-    }
-
-    return {
-      name: host,
-      type: handler?.handler as HandlerType,
-      origin,
-      config: handler,
-    };
-  }) as ServerCardData[];
+  // Parse routes across all http servers (robust to nested subroute/group shapes).
+  const serverCards: ServerCardData[] = parseAllRoutes(config).map((route) => ({
+    name: route.host,
+    type: route.handler as HandlerType,
+    origin: route.upstreams.join(', '),
+    config: route.handlerConfig as ServerFormData['reverseProxyConfig'],
+  }));
 
   if (isLoading) {
     return (
