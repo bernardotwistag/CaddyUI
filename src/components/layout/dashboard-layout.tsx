@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { UpdateIndicator } from "@/components/layout/update-indicator";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -12,7 +13,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b">
-        <div className="container flex h-16 items-center px-4">
+        <div className="container flex h-16 items-center justify-between px-4">
           <div className="flex items-center space-x-4">
             <Link href="/" className="text-xl font-bold">Caddy UI</Link>
             <Separator orientation="vertical" className="h-6" />
@@ -26,8 +27,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <Button variant="ghost" asChild>
                 <Link href="/config">Config</Link>
               </Button>
+              <Button variant="ghost" asChild>
+                <Link href="/help">Help</Link>
+              </Button>
             </nav>
           </div>
+          <UpdateIndicator />
         </div>
       </header>
 
