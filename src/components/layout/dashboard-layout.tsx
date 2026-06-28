@@ -10,6 +10,7 @@ import { LogoutButton } from "@/components/layout/logout-button";
 const navLinks = [
   { href: "/", label: "Dashboard" },
   { href: "/http", label: "HTTP" },
+  { href: "/upstream", label: "Upstreams" },
   { href: "/config", label: "Config" },
   { href: "/help", label: "Help" },
 ];
